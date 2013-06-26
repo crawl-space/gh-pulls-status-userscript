@@ -1,0 +1,22 @@
+{
+  "name": "gh-pulls-status-userscript",
+  "version": "0.0.1",
+  "description": "A userscript that adds build status to the pulls list on github",
+  "main": "gh-pulls-status.user.js",
+  "scripts": {
+    "test": "node_modules/.bin/jshint gh-pulls-status.user.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jbowes/gh-pulls-status-userscript.git"
+  },
+  "author": "James Bowes",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/jbowes/gh-pulls-status-userscript/issues"
+  },
+  "devDependencies": {
+    "jshint": "~2.1.4"
+  }
+}

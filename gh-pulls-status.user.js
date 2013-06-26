@@ -69,7 +69,7 @@ function pullLoaded(responseText, pullId, statusItem, info) {
     var req = new XMLHttpRequest();
     req.onload = function() {
         statusLoaded(this.responseText, pullId, statusItem);
-    }
+    };
 
     req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/statuses/' + ref);
     req.setRequestHeader('Authorization', 'token ' + TOKEN);
@@ -80,7 +80,7 @@ function getStatus(pullId, statusItem, info) {
     var req = new XMLHttpRequest();
     req.onload = function() {
         pullLoaded(this.responseText, pullId, statusItem, info);
-    }
+    };
 
     req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/pulls/' + pullId);
     req.setRequestHeader('Authorization', 'token ' + TOKEN);
