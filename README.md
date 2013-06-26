@@ -2,6 +2,8 @@
 
 A userscript that adds build status to the pulls list on github
 
+![Image of status icons](https://raw.github.com/jbowes/gh-pulls-status-userscript/master/screenshot.png)
+
 ## Installing
 
 Use your favourite userscript manager (Greasemonkey, Tampermonkey, etc) to
