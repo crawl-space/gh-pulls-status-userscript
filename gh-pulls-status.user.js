@@ -1,22 +1,17 @@
 // ==UserScript==
-// @name       My Fancy New Userscript
-// @namespace  http://use.i.E.your.homepage/
-// @version    0.1
-// @description  enter something useful
+// @name       GitHub Pulls Status
+// @namespace  http://repl.ca
+// @version    0.0.1
+// @description Display build status on the 'pulls' page
 // @match      https://github.com/*/pulls
 // @copyright  2012+, James Bowes
 // ==/UserScript==
-
-// TODO:
-//  - Better flow for getting auth token
-//  - not modified checks
-//  - remove status icon if no status set at all
 
 var TOKEN = "FILL ME IN";
 
 
 function main() {
-	GM_addStyle("li.build-status {float: right}");
+    GM_addStyle("li.build-status {float: right}");
 
     var parts = document.URL.split('/');
     var owner = parts[parts.length - 3];
@@ -24,14 +19,14 @@ function main() {
 
     var pullList = document.getElementsByClassName('pulls-list')[0];
     var pulls = pullList.getElementsByClassName('list-group-item');
-    
+
     for (var i = 0; i < pulls.length; i++) {
         annotatePull(pulls[i], {owner: owner, repo: repo});
     }
 }
 
 var baseStatus = 'build-status octicon status ';
-    
+
 function annotatePull(pull, info) {
     var pullId = pull.getElementsByClassName('list-group-item-number')[0].innerHTML.substring(1);
     var metaList = pull.getElementsByClassName('list-group-item-meta')[0];
@@ -39,7 +34,7 @@ function annotatePull(pull, info) {
     var statusItem = document.createElement('li');
     statusItem.setAttribute('class', baseStatus + 'octicon-clock');
     metaList.insertBefore(statusItem);
-    
+
     getStatus(pullId, statusItem, info);
 }
 
@@ -70,23 +65,23 @@ function statusLoaded(responseText, pullId, statusItem) {
 function pullLoaded(responseText, pullId, statusItem, info) {
     var pull = JSON.parse(responseText);
     var ref = pull.head.sha;
-    
+
     var req = new XMLHttpRequest();
     req.onload = function() {
         statusLoaded(this.responseText, pullId, statusItem);
     }
-    
+
     req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/statuses/' + ref);
     req.setRequestHeader('Authorization', 'token ' + TOKEN);
     req.send();
 }
-    
+
 function getStatus(pullId, statusItem, info) {
     var req = new XMLHttpRequest();
     req.onload = function() {
         pullLoaded(this.responseText, pullId, statusItem, info);
     }
-    
+
     req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/pulls/' + pullId);
     req.setRequestHeader('Authorization', 'token ' + TOKEN);
     req.send();
