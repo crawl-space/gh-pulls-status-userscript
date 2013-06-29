@@ -2,7 +2,7 @@
 
 A userscript that adds build status to the pulls list on github
 
-![Build Status](https://travis-ci.org/jbowes/gh-pulls-status-userscript.png)
+[![Build Status](https://travis-ci.org/jbowes/gh-pulls-status-userscript.png)](https://travis-ci.org/jbowes/gh-pulls/status-userscript)
 
 
 ![Image of status icons](https://raw.github.com/jbowes/gh-pulls-status-userscript/master/screenshot.png)
