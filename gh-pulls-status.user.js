@@ -40,10 +40,18 @@ function annotatePull(pull, info) {
 }
 
 function statusLoaded(responseText, pullId, statusItem) {
-    // only care about the most recent status
-    var status = JSON.parse(responseText)[0];
-
+    var statuses = JSON.parse(responseText);
     var statusStr;
+
+    // no build status. remove the icon
+    if (statuses.length === 0) {
+        statusItem.parentNode.removeChild(statusItem);
+        return;
+    }
+
+    // only care about the most recent status
+    var status = statuses[0];
+
     switch (status.state) {
         case 'success':
             statusStr = BASE_STATUS + 'octicon-check status-success';
