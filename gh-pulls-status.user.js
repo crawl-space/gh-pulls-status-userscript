@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name       GitHub Pulls Status
 // @namespace  http://repl.ca
-// @version    0.0.1
+// @version    1.1.0
 // @description Display build status on the 'pulls' page
 // @match      https://github.com/*/pulls
 // @copyright  2012+, James Bowes
