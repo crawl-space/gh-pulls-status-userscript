@@ -121,6 +121,12 @@ function getStatus(pullId, statusItem, info) {
   var cached = localStorage.getItem(cacheKey(pullId, info));
   if (cached) {
     data = JSON.parse(cached);
+
+    // set the status to the last value while checking
+    if (data.data) {
+      statusLoaded(data.data, pullId, statusItem);
+    }
+
     req.setRequestHeader('If-Modified-Since', data.lastModified);
   }
 

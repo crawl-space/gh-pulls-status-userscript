@@ -16,7 +16,6 @@ install. Make sure to set the token!
 
 - Better flow for getting auth token
 - optional auth token
-- not modified checks to avoid rate limiting
 - notify user of failure to get status
 - tool tips with build status
 - link to build result
