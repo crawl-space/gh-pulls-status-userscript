@@ -25,14 +25,15 @@ function main() {
     }
 }
 
-var baseStatus = 'build-status octicon status ';
+/** @const */
+var BASE_STATUS = 'build-status octicon status ';
 
 function annotatePull(pull, info) {
     var pullId = pull.getElementsByClassName('list-group-item-number')[0].innerHTML.substring(1);
     var metaList = pull.getElementsByClassName('list-group-item-meta')[0];
 
     var statusItem = document.createElement('li');
-    statusItem.setAttribute('class', baseStatus + 'octicon-clock');
+    statusItem.setAttribute('class', BASE_STATUS + 'octicon-clock');
     metaList.insertBefore(statusItem);
 
     getStatus(pullId, statusItem, info);
@@ -40,22 +41,22 @@ function annotatePull(pull, info) {
 
 function statusLoaded(responseText, pullId, statusItem) {
     // only care about the most recent status
-	var status = JSON.parse(responseText)[0];
+    var status = JSON.parse(responseText)[0];
 
     var statusStr;
     switch (status.state) {
         case 'success':
-            statusStr = baseStatus + 'octicon-check status-success';
+            statusStr = BASE_STATUS + 'octicon-check status-success';
             break;
         case 'failure':
-            statusStr = baseStatus + 'octicon-x status-failure';
+            statusStr = BASE_STATUS + 'octicon-x status-failure';
             break;
         case 'pending':
-            statusStr = baseStatus + 'octicon-primitive-dot status-pending';
+            statusStr = BASE_STATUS + 'octicon-primitive-dot status-pending';
             break;
         default:
             // unknown? problem!
-            statusStr = baseStatus + 'octicon-stop';
+            statusStr = BASE_STATUS + 'octicon-stop';
             break;
     }
 
