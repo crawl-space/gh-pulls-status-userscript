@@ -1,3 +1,4 @@
+/* vim: set ts=2 sw=2 expandtab: */
 // ==UserScript==
 // @name       GitHub Pulls Status
 // @namespace  http://repl.ca
@@ -72,32 +73,39 @@ function statusLoaded(responseText, pullId, statusItem) {
 }
 
 function pullLoaded(responseText, pullId, statusItem, info) {
-    var pull = JSON.parse(responseText);
-    var ref = pull.head.sha;
-    var data;
+  var pull = JSON.parse(responseText);
+  var ref = pull.head.sha;
+  var data;
 
-    var req = new XMLHttpRequest();
-    req.onload = function() {
-        var responseText;
-        if (this.status === 304) {
-            responseText = data.data;
-        } else  {
-            localStorage.setItem(cacheKey(pullId, info), JSON.stringify({etag: this.getResponseHeader('etag'), data: this.responseText}));
-            responseText = this.responseText;
-        }
-        statusLoaded(responseText, pullId, statusItem);
-    };
+  var req = new XMLHttpRequest();
+  req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/statuses/' + ref);
 
-    req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/statuses/' + ref);
+  var cached = localStorage.getItem(cacheKey(pullId, info));
+  if (cached) {
+    data = JSON.parse(cached);
+    req.setRequestHeader('If-None-Match', data.etag);
+  }
 
-    var cached = localStorage.getItem(cacheKey(pullId, info));
-    if (cached) {
-        data = JSON.parse(cached);
-        req.setRequestHeader('If-None-Match', data.etag);
+  req.setRequestHeader('Authorization', 'token ' + TOKEN);
+
+  req.onload = function() {
+    var responseText;
+    if (this.status === 304) {
+      responseText = data.data;
+    } else  {
+      var toCache = {
+        etag: this.getResponseHeader('Etag'),
+        lastModified: data.lastModified,
+        data: this.responseText,
+        sha: data.sha
+      };
+      localStorage.setItem(cacheKey(pullId, info), JSON.stringify(toCache));
+      responseText = this.responseText;
     }
+    statusLoaded(responseText, pullId, statusItem);
+  };
 
-    req.setRequestHeader('Authorization', 'token ' + TOKEN);
-    req.send();
+  req.send();
 }
 
 function cacheKey(pullId, info) {
@@ -105,17 +113,38 @@ function cacheKey(pullId, info) {
 }
 
 function getStatus(pullId, statusItem, info) {
-    var req = new XMLHttpRequest();
-    var data;
-    req.onload = function() {
-        pullLoaded(this.responseText, pullId, statusItem, info);
-    };
+  var req = new XMLHttpRequest();
+  var data;
 
-    req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/pulls/' + pullId);
+  req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/pulls/' + pullId);
 
-    req.setRequestHeader('Authorization', 'token ' + TOKEN);
+  var cached = localStorage.getItem(cacheKey(pullId, info));
+  if (cached) {
+    data = JSON.parse(cached);
+    req.setRequestHeader('If-Modified-Since', data.lastModified);
+  }
 
-    req.send();
+  req.setRequestHeader('Authorization', 'token ' + TOKEN);
+
+  req.onload = function() {
+    var sha;
+    if (this.status === 304) {
+      sha = data.sha;
+    } else {
+      var toCache = {
+        etag: data.etag,
+        lastModified: this.getResponseHeader('Last-Modified'),
+        data: data.data,
+        sha: this.responseText
+      };
+      localStorage.setItem(cacheKey(pullId, info), JSON.stringify(toCache));
+
+      pullLoaded(sha, pullId, statusItem, info);
+    }
+    pullLoaded(sha, pullId, statusItem, info);
+  };
+
+  req.send();
 }
 
 main();
