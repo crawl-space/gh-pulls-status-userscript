@@ -74,25 +74,47 @@ function statusLoaded(responseText, pullId, statusItem) {
 function pullLoaded(responseText, pullId, statusItem, info) {
     var pull = JSON.parse(responseText);
     var ref = pull.head.sha;
+    var data;
 
     var req = new XMLHttpRequest();
     req.onload = function() {
-        statusLoaded(this.responseText, pullId, statusItem);
+        var responseText;
+        if (this.status === 304) {
+            responseText = data.data;
+        } else  {
+            localStorage.setItem(cacheKey(pullId, info), JSON.stringify({etag: this.getResponseHeader('etag'), data: this.responseText}));
+            responseText = this.responseText;
+        }
+        statusLoaded(responseText, pullId, statusItem);
     };
 
     req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/statuses/' + ref);
+
+    var cached = localStorage.getItem(cacheKey(pullId, info));
+    if (cached) {
+        data = JSON.parse(cached);
+        req.setRequestHeader('If-None-Match', data.etag);
+    }
+
     req.setRequestHeader('Authorization', 'token ' + TOKEN);
     req.send();
 }
 
+function cacheKey(pullId, info) {
+    return 'statuses:' + info.owner + ':' + info.repo + ':' + pullId;
+}
+
 function getStatus(pullId, statusItem, info) {
     var req = new XMLHttpRequest();
+    var data;
     req.onload = function() {
         pullLoaded(this.responseText, pullId, statusItem, info);
     };
 
     req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/pulls/' + pullId);
+
     req.setRequestHeader('Authorization', 'token ' + TOKEN);
+
     req.send();
 }
 
