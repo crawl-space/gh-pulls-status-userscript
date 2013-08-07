@@ -83,7 +83,9 @@ function pullLoaded(responseText, pullId, statusItem, info) {
   var cached = localStorage.getItem(cacheKey(pullId, info));
   if (cached) {
     data = JSON.parse(cached);
-    req.setRequestHeader('If-None-Match', data.etag);
+    if (data.etag) {
+      req.setRequestHeader('If-None-Match', data.etag);
+    }
   }
 
   req.setRequestHeader('Authorization', 'token ' + TOKEN);
@@ -114,7 +116,7 @@ function cacheKey(pullId, info) {
 
 function getStatus(pullId, statusItem, info) {
   var req = new XMLHttpRequest();
-  var data;
+  var data = {};
 
   req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/pulls/' + pullId);
 
