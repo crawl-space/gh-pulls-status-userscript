@@ -1,6 +1,6 @@
 # GitHub Pulls Status Userscript
 
-[![Build Status](https://travis-ci.org/jbowes/gh-pulls-status-userscript.png)](https://travis-ci.org/jbowes/gh-pulls/status-userscript)
+[![Build Status](https://travis-ci.org/jbowes/gh-pulls-status-userscript.png?branch=master)](https://travis-ci.org/jbowes/gh-pulls-status-userscript)
 [![MIT License](http://b.repl.ca/v1/license-MIT-red.png)](LICENSE)
 
 A userscript that adds build status to the pulls list on github
