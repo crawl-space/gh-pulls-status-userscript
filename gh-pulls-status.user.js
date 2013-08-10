@@ -5,71 +5,71 @@
 // @version    1.1.0
 // @description Display build status on the 'pulls' page
 // @match      https://github.com/*/pulls
-// @copyright  2012+, James Bowes
+// @copyright  2013+, James Bowes
 // ==/UserScript==
 
 var TOKEN = "FILL ME IN";
 
 
 function main() {
-    GM_addStyle("li.build-status {float: right}");
+  GM_addStyle("li.build-status {float: right}");
 
-    var parts = document.URL.split('/');
-    var owner = parts[parts.length - 3];
-    var repo = parts[parts.length - 2];
+  var parts = document.URL.split('/');
+  var owner = parts[parts.length - 3];
+  var repo = parts[parts.length - 2];
 
-    var pullList = document.getElementsByClassName('pulls-list')[0];
-    var pulls = pullList.getElementsByClassName('list-group-item');
+  var pullList = document.getElementsByClassName('pulls-list')[0];
+  var pulls = pullList.getElementsByClassName('list-group-item');
 
-    for (var i = 0; i < pulls.length; i++) {
-        annotatePull(pulls[i], {owner: owner, repo: repo});
-    }
+  for (var i = 0; i < pulls.length; i++) {
+    annotatePull(pulls[i], {owner: owner, repo: repo});
+  }
 }
 
 /** @const */
 var BASE_STATUS = 'build-status octicon status ';
 
 function annotatePull(pull, info) {
-    var pullId = pull.getElementsByClassName('list-group-item-number')[0].innerHTML.substring(1);
-    var metaList = pull.getElementsByClassName('list-group-item-meta')[0];
+  var pullId = pull.getElementsByClassName('list-group-item-number')[0].innerHTML.substring(1);
+  var metaList = pull.getElementsByClassName('list-group-item-meta')[0];
 
-    var statusItem = document.createElement('li');
-    statusItem.setAttribute('class', BASE_STATUS + 'octicon-clock');
-    metaList.insertBefore(statusItem);
+  var statusItem = document.createElement('li');
+  statusItem.setAttribute('class', BASE_STATUS + 'octicon-clock');
+  metaList.insertBefore(statusItem);
 
-    getStatus(pullId, statusItem, info);
+  getStatus(pullId, statusItem, info);
 }
 
 function statusLoaded(responseText, pullId, statusItem) {
-    var statuses = JSON.parse(responseText);
-    var statusStr;
+  var statuses = JSON.parse(responseText);
+  var statusStr;
 
-    // no build status. remove the icon
-    if (statuses.length === 0) {
-        statusItem.parentNode.removeChild(statusItem);
-        return;
-    }
+  // no build status. remove the icon
+  if (statuses.length === 0) {
+    statusItem.parentNode.removeChild(statusItem);
+    return;
+  }
 
-    // only care about the most recent status
-    var status = statuses[0];
+  // only care about the most recent status
+  var status = statuses[0];
 
-    switch (status.state) {
-        case 'success':
-            statusStr = BASE_STATUS + 'octicon-check status-success';
-            break;
-        case 'failure':
-            statusStr = BASE_STATUS + 'octicon-x status-failure';
-            break;
-        case 'pending':
-            statusStr = BASE_STATUS + 'octicon-primitive-dot status-pending';
-            break;
-        default:
-            // unknown? problem!
-            statusStr = BASE_STATUS + 'octicon-stop';
-            break;
-    }
+  switch (status.state) {
+    case 'success':
+      statusStr = BASE_STATUS + 'octicon-check status-success';
+      break;
+    case 'failure':
+      statusStr = BASE_STATUS + 'octicon-x status-failure';
+      break;
+    case 'pending':
+      statusStr = BASE_STATUS + 'octicon-primitive-dot status-pending';
+      break;
+    default:
+      // unknown? problem!
+      statusStr = BASE_STATUS + 'octicon-stop';
+      break;
+  }
 
-    statusItem.setAttribute('class', statusStr);
+  statusItem.setAttribute('class', statusStr);
 }
 
 function pullLoaded(responseText, pullId, statusItem, info) {
@@ -111,7 +111,7 @@ function pullLoaded(responseText, pullId, statusItem, info) {
 }
 
 function cacheKey(pullId, info) {
-    return 'statuses:' + info.owner + ':' + info.repo + ':' + pullId;
+  return 'statuses:' + info.owner + ':' + info.repo + ':' + pullId;
 }
 
 function getStatus(pullId, statusItem, info) {
