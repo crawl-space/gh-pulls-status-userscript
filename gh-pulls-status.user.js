@@ -75,7 +75,7 @@ function statusLoaded(responseText, pullId, statusItem) {
 function pullLoaded(responseText, pullId, statusItem, info) {
   var pull = JSON.parse(responseText);
   var ref = pull.head.sha;
-  var data;
+  var data = {};
 
   var req = new XMLHttpRequest();
   req.open('get', 'https://api.github.com/repos/' + info.owner + '/' + info.repo + '/statuses/' + ref);
@@ -140,14 +140,14 @@ function getStatus(pullId, statusItem, info) {
       sha = data.sha;
     } else {
       var toCache = {
-        etag: data.etag,
+        etag: data.etag || null,
         lastModified: this.getResponseHeader('Last-Modified'),
-        data: data.data,
+        data: data.data || null,
         sha: this.responseText
       };
       localStorage.setItem(cacheKey(pullId, info), JSON.stringify(toCache));
 
-      pullLoaded(sha, pullId, statusItem, info);
+      sha = this.responseText;
     }
     pullLoaded(sha, pullId, statusItem, info);
   };
