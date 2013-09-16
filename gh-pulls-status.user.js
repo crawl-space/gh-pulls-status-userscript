@@ -12,7 +12,7 @@ var TOKEN = "FILL ME IN";
 
 
 function main() {
-  GM_addStyle("li.build-status {float: right}");
+  GM_addStyle(".list-group-item .build-status {float: right; margin-right: 0px}");
 
   var parts = document.URL.split('/');
   var owner = parts[parts.length - 3];
